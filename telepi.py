@@ -30,7 +30,7 @@ def init(buttonDic, hook):
 	__buttonPins = buttonDic
 	
 	# Set all the pins to outputs
-	for pin in __buttonDic.values():
+	for pin in __buttonPins.values():
 		GPIO.setup(pin, GPIO.OUT)
 	
 	# Set the hook as an output
