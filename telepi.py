@@ -4,17 +4,17 @@ import RPi.GPIO as GPIO
 import time
 
 # Configured values
-buttonPins = []
-hookPin = -1
-
-# Delays
-keyDownTime = 0.25
-keyUpTime = 0.25
-hookUpTime = 1
-hookDownTime = 1
+__buttonPins = []
+__hookPin = -1
 
 # State
-inCall = False
+__inCall = False
+
+# Delays
+_keyDownTime = 0.25
+_keyUpTime = 0.25
+_hookUpTime = 1
+_hookDownTime = 1
 
 # Sets up the library, using a <KEY>:<PIN> dictionary, and a pin for the "hook"
 # of the phone.  When the hook pin recieves power, the phone should think that
@@ -27,58 +27,61 @@ def init(buttonDic, hook):
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
 	
-	buttonPins = buttonDic
+	__buttonPins = buttonDic
 	
 	# Set all the pins to outputs
-	for pin in buttonDic.values():
+	for pin in __buttonDic.values():
 		GPIO.setup(pin, GPIO.OUT)
 	
 	# Set the hook as an output
-	hookPin = hook
+	__hookPin = hook
 
 # Takes a single character and dials it.
 def pushKey(key):
 	
 	if key in buttonPins:
-		GPIO.output(buttonPins[key], 1)
-		time.sleep(keyDownTime)
-		GPIO.output(buttonPins[key], 0)
-		time.sleep(keyAfterUpTime)
+		GPIO.output(__buttonPins[key], 1)
+		time.sleep(_keyDownTime)
+		GPIO.output(__buttonPins[key], 0)
+		time.sleep(__keyAfterUpTime)
 	else:
-		print('Invalid key dialed')
+		raise Exception('Invalid key: ' + str(key))
 
 def dial(number):
 	
+	# Split up the string into the parts.
 	chars = list(number)
 	
 	# Iterate through the pushable keys.
 	for k in chars:
-		if k in buttonPins:
+		if k in __buttonPins:
 			pushKey(k)
 
-def pickup():
-	GPIO.output(hookPin, 1)
-	time.sleep(hookUpTime)
+def _pickup():
+	GPIO.output(__hookPin, 1)
+	time.sleep(_hookUpTime)
 
-def rehook():
-	GPIO.output(hookPin, 0)
-	time.sleep(hookDownTime)
+def _rehook():
+	GPIO.output(__hookPin, 0)
+	time.sleep(_hookDownTime)
 
+# Begins a call, dialing the number.
 def beginCall(number)
 	
-	if !inCall:
-		inCall = True
+	if !__inCall:
+		__inCall = True
 		pickup()
 		dial(number)
 	else:
-		print("ALREADY IN CALL!")
+		raise Exception('Can\'t begin call when in call.')
 
+# Ends a call, putting the handset back up.
 def endCall():
 	
-	if inCall:
+	if __inCall:
 		rehook()
-		inCall = False
-		time.sleep(hookDownTime)
+		__inCall = False
+		time.sleep(_hookDownTime)
 	else:
-		print("CALL ALREADY OVER!")
-		
+		raise Exception('Need to be in call to end one.')
+
