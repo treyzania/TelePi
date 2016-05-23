@@ -66,9 +66,9 @@ def _rehook():
 	time.sleep(_hookDownTime)
 
 # Begins a call, dialing the number.
-def beginCall(number)
+def beginCall(number):
 	
-	if !__inCall:
+	if not __inCall:
 		__inCall = True
 		pickup()
 		dial(number)
