@@ -16,9 +16,7 @@ _keyUpTime = 0.25
 _hookUpTime = 1
 _hookDownTime = 1
 
-# Sets up the library, using a <KEY>:<PIN> dictionary, and a pin for the "hook"
-# of the phone.  When the hook pin recieves power, the phone should think that
-# the handset is being picked up.
+# Sets up the library, using a <KEY>:<PIN> dictionary, and a pin for the "hook" of the phone.  When the hook pin recieves power, the phone should think that the handset is being picked up.
 def init(buttonDic, hook):
 	
 	# Cleans up any settings 
@@ -54,6 +52,7 @@ def pushKey(key):
 	else:
 		raise Exception('Invalid key: ' + str(key))
 
+# Dials the number specified, regardless of the call state.
 def dial(number):
 	
 	# Split up the string into the parts.
@@ -66,6 +65,7 @@ def dial(number):
 		if k in __buttonPins:
 			pushKey(k)
 
+# Picks up the handset, which should trigger a dial tone.
 def _pickup():
 	
 	global __hookPin
@@ -74,6 +74,7 @@ def _pickup():
 	GPIO.output(__hookPin, 1)
 	time.sleep(_hookUpTime)
 
+# Replaces the handset, usually ending a call.
 def _rehook():
 	
 	global __hookPin
@@ -94,7 +95,7 @@ def beginCall(number):
 	else:
 		raise Exception('Can\'t begin call when in call.')
 
-# Ends a call, putting the handset back up.
+# Ends a call, putting the handset in the cradle.
 def endCall():
 	
 	global __inCall
