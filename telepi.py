@@ -27,6 +27,7 @@ def init(buttonDic, hook):
 	GPIO.setmode(GPIO.BCM)
 	GPIO.setwarnings(False)
 	
+	global __buttonPins
 	__buttonPins = buttonDic
 	
 	# Set all the pins to outputs
@@ -34,16 +35,22 @@ def init(buttonDic, hook):
 		GPIO.setup(pin, GPIO.OUT)
 	
 	# Set the hook as an output
+	global __hookPin
 	__hookPin = hook
+	GPIO.setup(__hookPin, GPIO.OUT)
 
 # Takes a single character and dials it.
 def pushKey(key):
 	
-	if key in buttonPins:
+	global __buttonPins
+	global _keyDowTime
+	global _keyUpTime
+	
+	if key in __buttonPins:
 		GPIO.output(__buttonPins[key], 1)
 		time.sleep(_keyDownTime)
 		GPIO.output(__buttonPins[key], 0)
-		time.sleep(__keyAfterUpTime)
+		time.sleep(_keyUpTime)
 	else:
 		raise Exception('Invalid key: ' + str(key))
 
@@ -52,25 +59,37 @@ def dial(number):
 	# Split up the string into the parts.
 	chars = list(number)
 	
+	global __buttonPins
+	
 	# Iterate through the pushable keys.
 	for k in chars:
 		if k in __buttonPins:
 			pushKey(k)
 
 def _pickup():
+	
+	global __hookPin
+	global _hookUpTime
+	
 	GPIO.output(__hookPin, 1)
 	time.sleep(_hookUpTime)
 
 def _rehook():
+	
+	global __hookPin
+	global _hookDownTime
+	
 	GPIO.output(__hookPin, 0)
 	time.sleep(_hookDownTime)
 
 # Begins a call, dialing the number.
 def beginCall(number):
 	
+	global __inCall
+	
 	if not __inCall:
 		__inCall = True
-		pickup()
+		_pickup()
 		dial(number)
 	else:
 		raise Exception('Can\'t begin call when in call.')
@@ -78,8 +97,10 @@ def beginCall(number):
 # Ends a call, putting the handset back up.
 def endCall():
 	
+	global __inCall
+	
 	if __inCall:
-		rehook()
+		_rehook()
 		__inCall = False
 		time.sleep(_hookDownTime)
 	else:
