@@ -13,11 +13,11 @@ __inCall = False
 # Delays
 _keyDownTime = 0.25
 _keyUpTime = 0.25
-_hookUpTime = 1
+_hookUpTime = 2
 _hookDownTime = 1
 
 # Sets up the library, using a <KEY>:<PIN> dictionary, and a pin for the "hook" of the phone.  When the hook pin recieves power, the phone should think that the handset is being picked up.
-def init(buttonDic, hook):
+def setup(buttonDic, hook):
 	
 	# Cleans up any settings 
 	GPIO.cleanup()
